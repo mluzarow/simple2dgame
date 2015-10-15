@@ -8,7 +8,7 @@ public class playerInput : MonoBehaviour {
 	float moveSpeed = 11f; //Movement force
 	Vector2 velocity;     //Player velocity
 
-	public Vector2 input;
+	public static Vector2 input;
 
 	//Jumping
 	float gravity = -50f; //Gravity force
@@ -96,6 +96,24 @@ public class playerInput : MonoBehaviour {
 				velocity.y = maxJumpvelocity;
 			}
 		}
+		/*if (Mathf.Abs (input.x) == 1 && wallSliding) {
+			if(Input.GetKeyDown(KeyCode.J)) {
+				//Jump towards the wall
+				if (wallDirection == input.x) {
+					velocity.x = -wallDirection * wallJumpTowards.x;
+					velocity.y = wallJumpTowards.y;
+					//Jump away from the wall
+				} else if (wallDirection == -input.x) {
+					velocity.x = -wallDirection * wallJumpAway.x;
+					velocity.y = wallJumpAway.y;
+					//Jump without direction
+				} else if (input.y == -1) {
+					velocity.x = -wallDirection * wallJumpNeutral.x;
+					velocity.y = wallJumpNeutral.y;
+				}
+			}
+		}*/
+
 		if (Input.GetKeyUp (KeyCode.J)) {
 			if (velocity.y > minJumpVelocity) {
 				velocity.y = minJumpVelocity;
@@ -111,6 +129,6 @@ public class playerInput : MonoBehaviour {
 		                               controller.collisions.down?accelerationTimeGrounded:accelerationTimeAirborn);
 		}
 		velocity.y += gravity * Time.deltaTime;
-		controller.Move (velocity * Time.deltaTime);
+		controller.Move (velocity * Time.deltaTime, false);
 	}
 }

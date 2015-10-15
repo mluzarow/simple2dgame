@@ -7,22 +7,78 @@ public class platformController : raycastController {
 	public Vector2 move;
 	public LayerMask passengerMask;
 
+	public Vector2[] waypoints;
+	Vector2[] worldWaypoints;
+
+	public float platformSpeed;
+	int waypointIndex;
+	float percentBetweenWaypoints;
+
+	List<PassengerMovement> passengerMovement;
+	//Reducing component calls
+	Dictionary<Transform, playerController> passengerDisctionary = new Dictionary<Transform, playerController>();
+
+
 	public override void Start () {
 		base.Start ();
+
+		worldWaypoints = new Vector2[waypoints.Length];
+
+		for (int i = 0; i < waypoints.Length; i++) {
+			worldWaypoints[i] = waypoints[i] + (Vector2)transform.position;
+		}
 	}
 
 	void Update () {
-
 		updateRaycasts ();
 
-		Vector2 velocity = move * Time.deltaTime;
-		movePassenger (velocity);
+		Vector2 velocity = calcPlatformMovement();
+		calcPassengerMovement (velocity);
+
+		movePassanger (true);
 		transform.Translate (velocity);
+		movePassanger (false);
 	}
 
-	void movePassenger(Vector2 velocity) {
+	Vector2 calcPlatformMovement() {
+		int nextWaypointIndex = waypointIndex + 1;
+		float distanceBetweenWaypoints = Vector2.Distance (worldWaypoints [waypointIndex], worldWaypoints [nextWaypointIndex]);
+		percentBetweenWaypoints += Time.deltaTime * platformSpeed / distanceBetweenWaypoints;
+	
+		Vector2 newPosition = Vector2.Lerp (worldWaypoints [waypointIndex], worldWaypoints [nextWaypointIndex], percentBetweenWaypoints);
+
+		if (percentBetweenWaypoints >= 1) {
+			percentBetweenWaypoints = 0f;
+			waypointIndex++;
+
+			//Reached the end of the array
+			if (waypointIndex >= worldWaypoints.Length - 1) {
+				waypointIndex = 0;
+				System.Array.Reverse (worldWaypoints);
+			}
+		}
+
+		return (newPosition - (Vector2)transform.position); 
+	}
+
+	void movePassanger(bool beforeMovePlatform) {
+		foreach (PassengerMovement passenger in passengerMovement) {
+			//Check if passenger does not yet exist in dictionary (only get 1 call per passenger)
+			if (!passengerDisctionary.ContainsKey(passenger.transform)) {
+				//Add passenger to dictionary
+				passengerDisctionary.Add (passenger.transform, passenger.transform.GetComponent<playerController>());
+			}
+
+			if (passenger.moveBeforePlatform == beforeMovePlatform) {
+				passengerDisctionary[passenger.transform].Move (passenger.velocity, passenger.standingOnPlatform);
+			}
+		}
+	}
+
+	void calcPassengerMovement(Vector2 velocity) {
 		//Store all passengers moved on this frame
 		HashSet<Transform> movedPassengers = new HashSet<Transform> ();
+		passengerMovement = new List<PassengerMovement> ();
 
 		float directionX = Mathf.Sign (velocity.x);
 		float directionY = Mathf.Sign (velocity.y);
@@ -49,8 +105,9 @@ public class platformController : raycastController {
 						float pushX = (directionY == 1) ? velocity.x : 0f;
 						//Pushing = platform's velocity - (detection gap - ray inset) in y dir
 						float pushY = velocity.y - (hit.distance - inset) * directionY;
-						
-						hit.transform.Translate(new Vector2(pushX, pushY));
+
+						passengerMovement.Add (new PassengerMovement(hit.transform, new Vector2(pushX, pushY), directionY == 1, true));
+						//hit.transform.Translate(new Vector2(pushX, pushY));
 					}
 				}
 			}
@@ -76,9 +133,10 @@ public class platformController : raycastController {
 
 						//Pushing = platform's velocity - (detection gap - ray inset) in x dir
 						float pushX = velocity.x - (hit.distance - inset) * directionX;
-						float pushY = 0f;
-						
-						hit.transform.Translate(new Vector2(pushX, pushY));
+						float pushY = 0.001f; //Tiny force to allow player to jump
+
+						passengerMovement.Add (new PassengerMovement(hit.transform, new Vector2(pushX, pushY), false, true));
+						//hit.transform.Translate(new Vector2(pushX, pushY));
 					}
 				}
 			}
@@ -104,11 +162,43 @@ public class platformController : raycastController {
 						float pushX = velocity.x;
 						//Pushing = platform's velocity in y dir
 						float pushY = velocity.y;
-						
-						hit.transform.Translate(new Vector2(pushX, pushY));
+
+						passengerMovement.Add (new PassengerMovement(hit.transform, new Vector2(pushX, pushY), true, false));
+						//hit.transform.Translate(new Vector2(pushX, pushY));
 					}
 				}
 			}
+		}
+	}
+	//Draw waypoint gizmos
+	void OnDrawGizmos() {
+		//Only draw if there are any waypoints
+		if (waypoints != null) {
+			Gizmos.color = Color.red; //Gizmo color
+			float size = 0.3f; //Gizmo size
+
+			//Go through each waypoint and convert local to global position
+			for (int i = 0; i < waypoints.Length; i++) {
+				Vector2 worldWaypointsPos = Application.isPlaying ? worldWaypoints[i] : waypoints[i] + (Vector2) transform.position;
+
+				Gizmos.DrawLine (worldWaypointsPos - Vector2.up * size, worldWaypointsPos + Vector2.up * size);
+				Gizmos.DrawLine (worldWaypointsPos - Vector2.right * size, worldWaypointsPos + Vector2.right * size);
+			}
+		}
+	}
+
+	struct PassengerMovement {
+		public Transform transform;
+		public Vector2 velocity;
+		public bool standingOnPlatform;
+		public bool moveBeforePlatform;
+
+		public PassengerMovement(Transform _transform, Vector2 _velocity, bool _standingOnPlatform, 
+		                         bool _moveBeforePlatform) {
+			transform = _transform;
+			velocity = _velocity;
+			standingOnPlatform = _standingOnPlatform;
+			moveBeforePlatform = _moveBeforePlatform;
 		}
 	}
 }

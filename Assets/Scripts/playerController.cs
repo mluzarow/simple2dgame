@@ -18,7 +18,7 @@ public class playerController : raycastController {
 		deathInfo.recentWaypoint = new Vector2 (0f, 0f);
 	}
 
-	public void Move(Vector2 velocity) {
+	public void Move(Vector2 velocity, bool standingOnPlatform = false) {
 		updateRaycasts ();
 		collisions.reset ();
 
@@ -36,6 +36,10 @@ public class playerController : raycastController {
 
 		//Move player with updated velocity value
 		transform.Translate (velocity);
+
+		if (standingOnPlatform) {
+			collisions.down = true;
+		}
 	}
 
 	//velocity in the x plane is NOT 0; check for collisions
@@ -67,6 +71,10 @@ public class playerController : raycastController {
 				collisions.reset ();
 				respawn (ref velocity, deathInfo.recentWaypoint);
 			} else if (hit) {
+				if (hit.distance == 0) {
+					continue;
+				}
+			
 				velocity.x = (hit.distance - inset) * directionX;
 				rayLength = hit.distance;
 

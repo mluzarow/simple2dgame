@@ -1,9 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\platformController.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\menuRebind.cs">
     <Files>
-      <File FileName="Assets\Scripts\platformController.cs" Line="12" Column="18" />
-      <File FileName="Assets\Scripts\playerController.cs" Line="14" Column="28" />
+      <File FileName="Assets\Scripts\menuMain.cs" Line="138" Column="3" />
+      <File FileName="Assets\Scripts\menuRebind.cs" Line="18" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

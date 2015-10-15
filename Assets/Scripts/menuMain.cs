@@ -22,6 +22,8 @@ public class menuMain : MonoBehaviour {
 	Rect optionsResolutionSize3;
 	Rect optionsResolutionSize4;
 	Rect optionsResolutionSize5;
+
+	Rect optionsRebindSize;
 	
 	//1167,729,1166.6,729
 
@@ -94,6 +96,9 @@ public class menuMain : MonoBehaviour {
 				Screen.SetResolution (1920, 1080, false);
 				resolutionChanged = true;
 			}
+			if (GUI.Button (optionsRebindSize, "Rebind Keys")) {
+				Application.LoadLevel ("rebindScene");
+			}
 
 		}
 
@@ -105,7 +110,6 @@ public class menuMain : MonoBehaviour {
 
 	//Redraw all Rects on resolution change
 	void drawRects() {
-		print ("drawing rects for " + Screen.width + "x" + Screen.height);
 		playButtonSize = new Rect (Screen.width * 0.738f, Screen.height * 0.242f, 
 		                           Screen.width * 0.200f, Screen.height * 0.052f);
 		optionButtonSize = new Rect (Screen.width * 0.738f, Screen.height * 0.3f, 
@@ -128,6 +132,8 @@ public class menuMain : MonoBehaviour {
 		optionsResolutionSize4 = new Rect (Screen.width * 0.738f, Screen.height * 0.696f, 
 		                                   Screen.width * 0.200f, Screen.height * 0.052f);
 		optionsResolutionSize5 = new Rect (Screen.width * 0.738f, Screen.height * 0.752f, 
+		                                   Screen.width * 0.200f, Screen.height * 0.052f);
+		optionsRebindSize = new Rect (Screen.width * 0.738f, Screen.height * 0.808f, 
 		                                   Screen.width * 0.200f, Screen.height * 0.052f);
 	}
 }
