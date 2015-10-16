@@ -32,6 +32,7 @@ public class playerInput : MonoBehaviour {
 	public Vector2 wallJumpNeutral;
 	
 	playerController controller;
+	
 
 	void Start() {
 		controller = GetComponent<playerController> ();
@@ -47,12 +48,12 @@ public class playerInput : MonoBehaviour {
 		minJumpVelocity = 0.1f;
 	}
 
+	
+
 	void Update() {
 		//Get raw direction - Keyboard returns 1, 0, or -1 each axis
-		input = new Vector2 ((Input.GetKey (KeyCode.A) ? -1 : 0) 
-										+ (Input.GetKey (KeyCode.D) ? 1 : 0),
-		                             	(Input.GetKey (KeyCode.W) ? 1 : 0) 
-										+ (Input.GetKey (KeyCode.S) ? -1 : 0));
+		input = new Vector2 ((Input.GetKey (menuMain.keys["LEFT"]) ? -1 : 0) + (Input.GetKey (menuMain.keys["RIGHT"]) ? 1 : 0),
+		                     (Input.GetKey (menuMain.keys["UP"]) ? 1 : 0) + (Input.GetKey (menuMain.keys["DOWN"]) ? -1 : 0));
 
 		bool wallSliding = false;
 		//Check if colliding into wall from left side or right
@@ -74,7 +75,7 @@ public class playerInput : MonoBehaviour {
 		}
 
 		//jump
-		if (Input.GetKeyDown (KeyCode.J)) {
+		if (Input.GetKeyDown (menuMain.keys["JUMP"])) {
 			//Jumping off of a wall
 			if (wallSliding) {
 				//Jump towards the wall
@@ -114,7 +115,7 @@ public class playerInput : MonoBehaviour {
 			}
 		}*/
 
-		if (Input.GetKeyUp (KeyCode.J)) {
+		if (Input.GetKeyUp (menuMain.keys["JUMP"])) {
 			if (velocity.y > minJumpVelocity) {
 				velocity.y = minJumpVelocity;
 			}

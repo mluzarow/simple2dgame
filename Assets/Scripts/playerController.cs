@@ -18,7 +18,7 @@ public class playerController : raycastController {
 		deathInfo.recentWaypoint = new Vector2 (0f, 0f);
 	}
 
-	public void Move(Vector2 velocity, bool standingOnPlatform = false) {
+	public void Move(Vector2 velocity, bool standingOnPlatform) {
 		updateRaycasts ();
 		collisions.reset ();
 
@@ -83,11 +83,11 @@ public class playerController : raycastController {
 				collisions.right = (directionX == 1);
 			}
 			if (waypoint1) {
-				deathInfo.recentWaypoint = new Vector2(0f, 0f);
+				deathInfo.recentWaypoint = new Vector2(60f, 2.6f);
 			} else if (waypoint2) {
-				deathInfo.recentWaypoint = new Vector2(41f, 0f);
+				deathInfo.recentWaypoint = new Vector2(-1.8f, -36f);
 			} else if (waypoint3) {
-				deathInfo.recentWaypoint = new Vector2(58f, 5f);
+				deathInfo.recentWaypoint = new Vector2(69f, -36f);
 			}
 		}
 	}
@@ -124,11 +124,11 @@ public class playerController : raycastController {
 				collisions.down = (directionY == -1);
 			}
 			if (waypoint1) {
-				deathInfo.recentWaypoint = new Vector2(0f, 0f);
+				deathInfo.recentWaypoint = new Vector2(60f, 2.6f);
 			} else if (waypoint2) {
-				deathInfo.recentWaypoint = new Vector2(41f, 0f);
+				deathInfo.recentWaypoint = new Vector2(-1.8f, -36f);
 			} else if (waypoint3) {
-				deathInfo.recentWaypoint = new Vector2(58f, 5f);
+				deathInfo.recentWaypoint = new Vector2(69f, -36f);
 			}
 		}
 	}

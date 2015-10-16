@@ -12,6 +12,8 @@ public class menuRebind : MonoBehaviour {
 	Rect rebindDownSize;
 	Rect rebindJumpSize;
 
+	Rect rebindBackSize;
+
 	Rect labelLeftSize;
 	Rect labelRightSize;
 	Rect labelUpSize;
@@ -23,25 +25,9 @@ public class menuRebind : MonoBehaviour {
 	bool lookingForKey = false;
 	string keyToChange = "";
 
-	//Dictionary holding all key bindings
-	public Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>();
-
 	void Start() {
 		//Set up GUI
 		drawRects ();
-
-		keys.Add ("LEFT", KeyCode.A);
-		keys.Add ("RIGHT", KeyCode.D);
-		keys.Add ("UP", KeyCode.W);
-		keys.Add ("DOWN", KeyCode.S);
-		keys.Add ("JUMP", KeyCode.J);
-		/*
-		foreach (KeyValuePair<string, KeyCode> entry in keys) {
-			print (entry.Key + " is present in the dictionary.");
-		}*/
-
-		//Load from player prefs
-		loadPrefs ("playerPrefs.ini");
 	}
 
 	void OnGUI() {
@@ -58,13 +44,13 @@ public class menuRebind : MonoBehaviour {
 			Event e = Event.current;
 
 			if (e.isKey) {
-				keys[keyToChange] = e.keyCode;
+				menuMain.keys[keyToChange] = e.keyCode;
 				lookingForKey = false;
 
 				List<string> keysToNull = new List<string>();
 
 				//Check to see if the keyCode is used anywhere else
-				foreach (KeyValuePair<string, KeyCode> entry in keys) {
+				foreach (KeyValuePair<string, KeyCode> entry in menuMain.keys) {
 					if (entry.Value == e.keyCode && entry.Key != keyToChange) {
 						keysToNull.Add (entry.Key);
 					}
@@ -72,7 +58,7 @@ public class menuRebind : MonoBehaviour {
 
 				//None each matching key's value
 				foreach (string entry in keysToNull) {
-					keys[entry] = KeyCode.None;
+					menuMain.keys[entry] = KeyCode.None;
 				}
 
 				//Save key bind change to file
@@ -80,25 +66,28 @@ public class menuRebind : MonoBehaviour {
 			}
 		//Show menu of current binds
 		} else {
-			if (GUI.Button (rebindLeftSize, keys["LEFT"].ToString())) {
+			if (GUI.Button (rebindLeftSize, menuMain.keys["LEFT"].ToString())) {
 				lookingForKey = true;
 				keyToChange = "LEFT";
 			}
-			if (GUI.Button (rebindRightSize, keys["RIGHT"].ToString())) {
+			if (GUI.Button (rebindRightSize, menuMain.keys["RIGHT"].ToString())) {
 				lookingForKey = true;
 				keyToChange = "RIGHT";
 			}
-			if (GUI.Button (rebindUpSize, keys["UP"].ToString())) {
+			if (GUI.Button (rebindUpSize, menuMain.keys["UP"].ToString())) {
 				lookingForKey = true;
 				keyToChange = "UP";
 			}
-			if (GUI.Button (rebindDownSize, keys["DOWN"].ToString())) {
+			if (GUI.Button (rebindDownSize, menuMain.keys["DOWN"].ToString())) {
 				lookingForKey = true;
 				keyToChange = "DOWN";
 			}
-			if (GUI.Button (rebindJumpSize, keys["JUMP"].ToString())) {
+			if (GUI.Button (rebindJumpSize, menuMain.keys["JUMP"].ToString())) {
 				lookingForKey = true;
 				keyToChange = "JUMP";
+			}
+			if (GUI.Button (rebindBackSize, "Back to menu")) {
+				Application.LoadLevel("menuMain");
 			}
 		}
 	}
@@ -109,7 +98,7 @@ public class menuRebind : MonoBehaviour {
 			StreamWriter f = new StreamWriter(Application.dataPath + "/Files/" + filename);
 
 			using (f) {
-				foreach (KeyValuePair<string, KeyCode> entry in keys) {
+				foreach (KeyValuePair<string, KeyCode> entry in menuMain.keys) {
 					f.WriteLine (entry.Key + ":" + entry.Value.ToString());
 				}
 			}
@@ -118,49 +107,6 @@ public class menuRebind : MonoBehaviour {
 			print (true);
 		}
 		return(false);
-	}
-
-	//Read key binds from playerPrefs.ini
-	bool loadPrefs(string filename) {
-		//Begin load block
-		try {
-			//Data will hold single key value pair "string:keycode"
-			string data;
-			//Key:Value pair split into [0] key [1] value
-			string[] currentKey = new string[2];
-
-			//Start filestream
-			StreamReader f = new StreamReader(Application.dataPath + "/Files/" + filename);
-
-			//Begin reading
-			using(f) {
-				//Check for a line; is a line, read it and check for another
-				do {
-					//Read a line
-					data = f.ReadLine();
-					print ("Read line: " + data);
-
-					//If line had data
-					if (data != null) {
-						//Split data line into key string and value keycode
-						currentKey = data.Split(':');
-						print ("Attenmpting to load " + currentKey[0] + " : " + currentKey[1] + " into dictionary.");
-
-						//Parse letter as KeyCode and put in dictionary
-						keys [currentKey [0]] = (KeyCode) System.Enum.Parse(typeof(KeyCode), currentKey [1]);
-						print ("Entered into dictionary");
-					}
-				} while (data != null);
-
-				//Close the file stream
-				f.Close ();
-				//Return 0
-				return(false);
-			}
-		} catch (IOException e) {
-			print(e);
-			return (true);
-		}
 	}
 
 	//Redraw all Rects on resolution change
@@ -172,12 +118,15 @@ public class menuRebind : MonoBehaviour {
 		rebindDownSize =  new Rect (Screen.width * 0.438f, Screen.height * 0.416f, Screen.width * 0.200f, Screen.height * 0.052f);
 		rebindJumpSize =  new Rect (Screen.width * 0.438f, Screen.height * 0.472f, Screen.width * 0.200f, Screen.height * 0.052f);
 
+		rebindBackSize =  new Rect (Screen.width * 0.438f, Screen.height * 0.526f, Screen.width * 0.200f, Screen.height * 0.052f);
+
+
 		labelLeftSize =  new Rect (Screen.width * 0.338f, Screen.height * 0.242f, Screen.width * 0.200f, Screen.height * 0.052f);
 		labelRightSize = new Rect (Screen.width * 0.338f, Screen.height * 0.300f, Screen.width * 0.200f, Screen.height * 0.052f);
 		labelUpSize =    new Rect (Screen.width * 0.338f, Screen.height * 0.358f, Screen.width * 0.200f, Screen.height * 0.052f);
 		labelDownSize =  new Rect (Screen.width * 0.338f, Screen.height * 0.416f, Screen.width * 0.200f, Screen.height * 0.052f);
 		labelJumpSize =  new Rect (Screen.width * 0.338f, Screen.height * 0.472f, Screen.width * 0.200f, Screen.height * 0.052f);
-	
+
 		rebindingLabelSize = new Rect (Screen.width * 0.500f, Screen.height * 0.500f, Screen.width * 0.500f, Screen.height * 0.500f);
 	}
 }

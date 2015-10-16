@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 
 public class menuMain : MonoBehaviour {
 	public Texture2D background;
@@ -7,6 +9,7 @@ public class menuMain : MonoBehaviour {
 	public GUIStyle button2Style;
 	public GUIStyle button3Style;
 	public GUIStyle optionsVsyncLabelStyle;
+
 	bool showOptions = false;
 	bool resolutionChanged = false;
 	bool vsyncState = false;
@@ -25,12 +28,40 @@ public class menuMain : MonoBehaviour {
 
 	Rect optionsRebindSize;
 	
-	//1167,729,1166.6,729
-
+	//Dictionary holding all key bindings
+	public static Dictionary<string, KeyCode> keys = new Dictionary<string, KeyCode>();
+	//List holding all input string keys
+	List<string> inputs = new List<string> ();
 
 	void Start() {
+		//Populates list of input keys
+		populateInputList ();
+		//Checks dictionary to make sure input keys are listed and defaults them to none
+		checkDictionary ();
+
+		//Load input bindings from player prefs
+		loadPrefs ("playerPrefs.ini");
+
 		Screen.SetResolution (1024, 768, false);
 		resolutionChanged = true;
+	}
+
+	//Populates list of input keys
+	void populateInputList () {
+		inputs.Add ("LEFT");
+		inputs.Add ("RIGHT");
+		inputs.Add ("UP");
+		inputs.Add ("DOWN");
+		inputs.Add ("JUMP");
+	}
+
+	//Checks dictionary to make sure input keys are listed and defaults them to none
+	void checkDictionary() {
+		foreach (string input in inputs) {
+			if (!keys.ContainsKey(input)) {
+				keys.Add (input, KeyCode.None);
+			}
+		}
 	}
 
 	void OnGUI() {
@@ -103,9 +134,52 @@ public class menuMain : MonoBehaviour {
 		}
 
 	}
-	
+
+	//Read key binds from playerPrefs.ini
+	bool loadPrefs(string filename) {
+		//Begin load block
+		try {
+			//Data will hold single key value pair "string:keycode"
+			string data;
+			//Key:Value pair split into [0] key [1] value
+			string[] currentKey = new string[2];
+			
+			//Start filestream
+			StreamReader f = new StreamReader(Application.dataPath + "/Files/" + filename);
+			
+			//Begin reading
+			using(f) {
+				//Check for a line; is a line, read it and check for another
+				do {
+					//Read a line
+					data = f.ReadLine();
+					print ("Read line: " + data);
+					
+					//If line had data
+					if (data != null) {
+						//Split data line into key string and value keycode
+						currentKey = data.Split(':');
+						print ("Attenmpting to load " + currentKey[0] + " : " + currentKey[1] + " into dictionary.");
+						
+						//Parse letter as KeyCode and put in dictionary
+						keys [currentKey [0]] = (KeyCode) System.Enum.Parse(typeof(KeyCode), currentKey [1]);
+						print ("Entered into dictionary");
+					}
+				} while (data != null);
+				
+				//Close the file stream
+				f.Close ();
+				//Return 0
+				return(false);
+			}
+		} catch (IOException e) {
+			print(e);
+			return (true);
+		}
+	}
+
 	void LoadLevel() {
-		Application.LoadLevel ("platformScene");
+		Application.LoadLevel ("testGame01");
 	}
 
 	//Redraw all Rects on resolution change

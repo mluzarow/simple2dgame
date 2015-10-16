@@ -16,7 +16,7 @@ public class spawnerClone : MonoBehaviour {
 	void Update () {
 		transform.Translate (direction * Time.deltaTime);
 
-		if (Mathf.Abs(transform.position.x) > 20f || Mathf.Abs (transform.position.y) > 40f) {
+		if (Mathf.Abs(transform.position.x) > 200f || Mathf.Abs (transform.position.y) > 400f) {
 			Destroy(gameObject);
 		}
 	}

@@ -5,28 +5,49 @@ public class spawner : MonoBehaviour {
 	public GameObject bullet;
 	public float x = 0f;
 	public float y = 0f;
-	
+	Vector2 distanceApart;
+	bool fire = false;
+
+	public GameObject player;
+
+	void Start() {
+		//StartCoroutine (wait (5f));
+	}
+
+	/*IEnumerator wait(float seconds) {
+		yield return new WaitForSeconds (seconds);
+		if (fire) {
+			spawnBullet ();
+		} else {
+
+		}
+	}*/
+
 	void Update() {
-		if (Input.GetKeyUp (KeyCode.Q)) {
-			for (int j = 0; j < 5; j++) {
-				y = 10f;
+		distanceApart.x = Mathf.Abs (player.transform.position.x) - Mathf.Abs (this.transform.position.x);
+		distanceApart.y = Mathf.Abs (player.transform.position.y) - Mathf.Abs (this.transform.position.y);
 
-				spawnBullet();
-			}
-
+		if (distanceApart.x <= 20f || distanceApart.y <= 20f) {
+			fire = true;
 		}
 	}
 
 	public void spawnBullet() {
-		for (int i = 0; i < 20; i++) {
-			Instantiate (bullet, new Vector3 (0f, 0f, 0f), Quaternion.Euler(new Vector3(0f, 0f, x)));
-			x += y;
-			if (x >= 360) {
-				y -= (y -1f);
-			} else if (x <= -360) {
-				y += 2f;
-			}
+		Instantiate (bullet, new Vector3 (0f, 0f, 0f), Quaternion.identity
+		             /*Quaternion.Euler(new Vector3(0f, 0f, Mathf.Cos (distanceApart.x / Mathf.Sqrt(Mathf.Pow (distanceApart.x, 2f) + Mathf.Pow (distanceApart.y, 2f)))))*/);
 
-		}
+		//wait 5 seconds
+		//StartCoroutine (wait ());
+	}
+
+
+
+	void OnDrawGizmos() {
+		Gizmos.color = Color.blue; //Gizmo color
+		float size = 0.3f; //Gizmo size
+		
+		//Draw gizmos for the start and end positions of the door teleports
+		Gizmos.DrawLine ((Vector2)transform.position - Vector2.up * size, (Vector2)transform.position + Vector2.up * size);
+		Gizmos.DrawLine ((Vector2)transform.position - Vector2.right * size, (Vector2)transform.position + Vector2.right * size);
 	}
 }
