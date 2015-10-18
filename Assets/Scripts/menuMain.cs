@@ -153,17 +153,14 @@ public class menuMain : MonoBehaviour {
 				do {
 					//Read a line
 					data = f.ReadLine();
-					print ("Read line: " + data);
 					
 					//If line had data
 					if (data != null) {
 						//Split data line into key string and value keycode
 						currentKey = data.Split(':');
-						print ("Attenmpting to load " + currentKey[0] + " : " + currentKey[1] + " into dictionary.");
-						
+
 						//Parse letter as KeyCode and put in dictionary
 						keys [currentKey [0]] = (KeyCode) System.Enum.Parse(typeof(KeyCode), currentKey [1]);
-						print ("Entered into dictionary");
 					}
 				} while (data != null);
 				
