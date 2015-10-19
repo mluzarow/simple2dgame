@@ -53,6 +53,7 @@ public class menuMain : MonoBehaviour {
 		inputs.Add ("UP");
 		inputs.Add ("DOWN");
 		inputs.Add ("JUMP");
+		inputs.Add ("ACTION");
 	}
 
 	//Checks dictionary to make sure input keys are listed and defaults them to none

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class textbox : MonoBehaviour {
 
@@ -8,36 +9,86 @@ public class textbox : MonoBehaviour {
 	public Rect textboxSize;
 	public float crawlTime = 0.5f;
 
-	bool triggerCoroutine = true;
+	int index = 0;
+	public List<string> textboxStuff;
+	int listTotal;
+
+	bool beginTextRoutine = false;
+	bool endTextRoutine = false;
+	bool beginTextPrint = false;
+	bool endTextPrint = false;
+	
 	bool triggerTextbox = false;
-	bool triggerFinished = false;
+	bool triggerSkipCrawl = false;
 
 	void Start() {
 		textboxSize = new Rect (Screen.width * 0.200f, Screen.height * 0.800f, Screen.width * 0.600f, Screen.height * 0.400f);
+
+		listTotal = textboxStuff.Capacity;
 	}
 
 	void Update() {
-		//Check if there is currently a coroutine running for the textbox
-		//If trigger is true, ok to run coroutine
-		if (triggerCoroutine) {
-			//Check if player is triggering the textbox (Up and Action)
-			if (playerInput.input.y == 1 && Input.GetKeyDown (KeyCode.K)) {
-				//New coroutine is being run, disallow new coroutines to be run during this time
-				triggerCoroutine = false;
+		//Player has not triggered the text routine
+		if (!beginTextRoutine) {
+			//Player has input commands to show the textbox
+			if (playerInput.input.y == 1 && Input.GetKeyDown (menuMain.keys["ACTION"])) {
+				beginTextRoutine = true;
+				beginTextPrint = true;
 
-				print ("Starting textCrawler coroutine");
-				StartCoroutine(textCrawler());
+				playerInput.triggerTextboxMovement = true;
+				print ("Beginning text routine");
 			}
-		//Coroutine is currently running OR coroutine has finished
-		} else if (triggerFinished) {
-			//We have player to press Action to remove the textbox
-			if (Input.GetKeyDown (KeyCode.K)) {
-				//Disable the textbox from displaying
+		//Player has triggered the text routine
+		} else if (beginTextRoutine) {
+			//Coroutine has ended with no more text to show; waiting for player input
+			if (endTextRoutine) {
+				//Reset all textbox variables
+				beginTextRoutine = false;
+				endTextRoutine = false;
+				beginTextPrint = false;
+				endTextPrint = false;
+
 				triggerTextbox = false;
-				//Set finished to false
-				triggerFinished = false;
-				//Allow coroutine to run again
-				triggerCoroutine = true;
+				triggerSkipCrawl = false;
+				index = 0;
+				playerInput.triggerTextboxMovement = false;
+
+				print ("Text routine has ended");
+			//Coroutine has not ended, therefore start it
+			} else if (beginTextPrint) {
+				//Cannot print text while printing text
+				beginTextPrint = false;
+				//Read new line
+				textboxContent = textboxStuff [index];
+
+				//Start coroutine
+				StartCoroutine(textCrawler());
+				print ("Coroutine has started for text " + (index+1) + " out of " + listTotal);
+			//Player pressed Action during text print
+			} else if (Input.GetKeyDown (menuMain.keys["ACTION"]) && !endTextRoutine) {
+				//The text has not printed to the end
+				if (!endTextPrint) {
+					//Skip text crawl timer
+					triggerSkipCrawl = true;
+					print ("Skipping text crawl");
+				//Text has printed to the end
+				} else if (endTextPrint) {
+					//Increment index by one
+					index++;
+
+					//These is still something left to print
+					if (index <= (listTotal - 1)) {
+
+						endTextPrint = false;
+						beginTextPrint = true;
+						triggerSkipCrawl = false;
+						print ("Additional text found");
+					//Nothing left to print
+					} else if (index > (listTotal - 1)) {
+						endTextRoutine = true;
+						print ("No additional text found");
+					}
+				}
 			}
 		}
 	}
@@ -54,16 +105,21 @@ public class textbox : MonoBehaviour {
 		//Allow textbox to be drawn on OnGUI()
 		triggerTextbox = true;
 
-		print ("Beginning to crawl text for the text: " + originalText);
 		//Interate through the string (originalText)
 		for (int i = 0; i < stringLength; i++) {
-			print ("Passing " + originalText[i] + " to output " + textboxContent);
 			//Copy the next letter from the original text to output textbox text
 			textboxContent += originalText[i];
-			
-			//Yield coroutine by seconds and continue
-			yield return new WaitForSeconds(crawlTime);
+
+			//If triggered, text will have no crawl timer
+			if (!triggerSkipCrawl) {
+				//Yield coroutine by seconds and continue
+				yield return new WaitForSeconds(crawlTime);
+			}
 		}
+		//Finished writing text
+		//triggerFinished = true;
+		endTextPrint = true;
+
 		yield return 0;
 	}
 

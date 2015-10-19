@@ -8,12 +8,15 @@ public class playerInput : MonoBehaviour {
 	float moveSpeed = 11f; //Movement force
 	Vector2 velocity;     //Player velocity
 
+	//Flag for switching between player inputs impacting standard platforming movement and textbox interaction
+	public static bool triggerTextboxMovement;
 	public static Vector2 input;
 
 	//Jumping
 	float gravity = -50f; //Gravity force
 	float jumpVelocity = 12f;
 
+	//Jump physics variables
 	public float maxJumpHeight = 4f;
 	public float minJumpHeight = 0.000001f;
 	public float maxJumpvelocity;
@@ -35,6 +38,9 @@ public class playerInput : MonoBehaviour {
 	
 
 	void Start() {
+		//Flag is false, default to regular platforming movement
+		triggerTextboxMovement = false;
+
 		controller = GetComponent<playerController> ();
 		wallJumpTowards = new Vector2 (12f, 20f);
 		wallJumpAway = new Vector2(18f, 17f);
@@ -74,61 +80,48 @@ public class playerInput : MonoBehaviour {
 			velocity.y = 0f;
 		}
 
-		//jump
-		if (Input.GetKeyDown (menuMain.keys["JUMP"])) {
-			//Jumping off of a wall
-			if (wallSliding) {
-				//Jump towards the wall
-				if (wallDirection == input.x) {
-					velocity.x = -wallDirection * wallJumpTowards.x;
-					velocity.y = wallJumpTowards.y;
-				//Jump away from the wall
-				} else if (wallDirection == -input.x) {
-					velocity.x = -wallDirection * wallJumpAway.x;
-					velocity.y = wallJumpAway.y;
-				//Jump without direction
-				} else if (input.y == -1) {
-					velocity.x = -wallDirection * wallJumpNeutral.x;
-					velocity.y = wallJumpNeutral.y;
-				}
-			}
-			//Jumping off of the ground
-			if (controller.collisions.down) {
-				velocity.y = maxJumpvelocity;
-			}
-		}
-		/*if (Mathf.Abs (input.x) == 1 && wallSliding) {
-			if(Input.GetKeyDown(KeyCode.J)) {
-				//Jump towards the wall
-				if (wallDirection == input.x) {
-					velocity.x = -wallDirection * wallJumpTowards.x;
-					velocity.y = wallJumpTowards.y;
+		//Freeze player movement while textbox is active
+		if (!triggerTextboxMovement) {
+			//jump
+			if (Input.GetKeyDown (menuMain.keys["JUMP"])) {
+				//Jumping off of a wall
+				if (wallSliding) {
+					//Jump towards the wall
+					if (wallDirection == input.x) {
+						velocity.x = -wallDirection * wallJumpTowards.x;
+						velocity.y = wallJumpTowards.y;
 					//Jump away from the wall
-				} else if (wallDirection == -input.x) {
-					velocity.x = -wallDirection * wallJumpAway.x;
-					velocity.y = wallJumpAway.y;
+					} else if (wallDirection == -input.x) {
+						velocity.x = -wallDirection * wallJumpAway.x;
+						velocity.y = wallJumpAway.y;
 					//Jump without direction
-				} else if (input.y == -1) {
-					velocity.x = -wallDirection * wallJumpNeutral.x;
-					velocity.y = wallJumpNeutral.y;
+					} else if (input.y == -1) {
+						velocity.x = -wallDirection * wallJumpNeutral.x;
+						velocity.y = wallJumpNeutral.y;
+					}
+				}
+				//Jumping off of the ground
+				if (controller.collisions.down) {
+					velocity.y = maxJumpvelocity;
 				}
 			}
-		}*/
 
-		if (Input.GetKeyUp (menuMain.keys["JUMP"])) {
-			if (velocity.y > minJumpVelocity) {
-				velocity.y = minJumpVelocity;
+			if (Input.GetKeyUp (menuMain.keys["JUMP"])) {
+				if (velocity.y > minJumpVelocity) {
+					velocity.y = minJumpVelocity;
+				}
 			}
-		}
-
-
-		//While sticking to wall, disable x-axis until jump is pressed
-		if (!wallSliding) {
-			//direction into velocity
-			float targetVelocityX = input.x * moveSpeed;
-			velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, 
+		
+			if (!wallSliding) {
+				//direction into velocity
+				float targetVelocityX = input.x * moveSpeed;
+				velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, 
 		                               controller.collisions.down?accelerationTimeGrounded:accelerationTimeAirborn);
+			}
+		} else {
+			velocity = new Vector2(0f, 0f);
 		}
+
 		velocity.y += gravity * Time.deltaTime;
 		controller.Move (velocity * Time.deltaTime, false);
 	}
