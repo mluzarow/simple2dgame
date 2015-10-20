@@ -12,6 +12,9 @@ public class doorController : raycastController {
 		//Handle raycast initialization
 		base.Start ();
 		//Bind raycasts to object
+		horizontalRays = 2;
+		verticalRays = 2;
+
 		updateRaycasts ();
 
 		//Make sure the found player flag starts at false

@@ -78,7 +78,6 @@ public class textbox : MonoBehaviour {
 
 					//These is still something left to print
 					if (index <= (listTotal - 1)) {
-
 						endTextPrint = false;
 						beginTextPrint = true;
 						triggerSkipCrawl = false;

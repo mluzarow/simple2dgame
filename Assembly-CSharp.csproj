@@ -60,8 +60,11 @@
      <Compile Include="Assets\Scripts\raycastController.cs" />
      <Compile Include="Assets\Scripts\spawner.cs" />
      <Compile Include="Assets\Scripts\spawnerClone.cs" />
+     <Compile Include="Assets\Scripts\textLibrarian.cs" />
+     <Compile Include="Assets\Scripts\textUser.cs" />
      <Compile Include="Assets\Scripts\textbox.cs" />
      <Compile Include="Assets\Scripts\waypointController.cs" />
+     <None Include="Assets\Files\Dialogue.txt" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>

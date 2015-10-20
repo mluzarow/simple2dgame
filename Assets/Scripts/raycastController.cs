@@ -6,11 +6,11 @@ public class raycastController : MonoBehaviour {
 	[HideInInspector] public BoxCollider2D collider;
 	[HideInInspector] public raycastOrigins raycasts;
 
-	[HideInInspector] public const float inset = 0.015f;
-	[HideInInspector] public int horizontalRays = 8;
-	[HideInInspector] public int verticalRays = 8;
-	[HideInInspector] public float horizontalRaySpacing;
-	[HideInInspector] public float verticalRaySpacing;
+	protected const float inset = 0.015f;
+	protected int horizontalRays = 8;
+	protected int verticalRays = 8;
+	protected float horizontalRaySpacing;
+	protected float verticalRaySpacing;
 
 	public virtual void Start() { //Must be virtual in order to be used scipts that extend this one
 		collider = GetComponent<BoxCollider2D> ();
