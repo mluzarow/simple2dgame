@@ -2,34 +2,41 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class textbox : MonoBehaviour {
+public class textPrinter : MonoBehaviour {
 
 	public string textboxContent;
 	public GUIStyle textboxStyle;
 	public Rect textboxSize;
-	public float crawlTime = 0.5f;
+	public float crawlTime = 0.05f;
 
-	int index = 0;
+	public string dialogue2Get;
+
 	public List<string> textboxStuff;
-	int listTotal;
 
-	bool beginTextRoutine = false;
-	bool endTextRoutine = false;
-	bool beginTextPrint = false;
-	bool endTextPrint = false;
+	private int index = 0;
+	private int listTotal;
+
+	private bool beginTextRoutine = false;
+	private bool endTextRoutine = false;
+	private bool beginTextPrint = false;
+	private bool endTextPrint = false;
 	
-	bool triggerTextbox = false;
-	bool triggerSkipCrawl = false;
+	private bool triggerTextbox = false;
+	private bool triggerSkipCrawl = false;
+
+	private textLibrarian librarian = new textLibrarian();
 
 	void Start() {
 		textboxSize = new Rect (Screen.width * 0.200f, Screen.height * 0.800f, Screen.width * 0.600f, Screen.height * 0.400f);
 
-		listTotal = textboxStuff.Capacity;
+		librarian.getDialogue (dialogue2Get);
+
+		listTotal = librarian.requestedText.Capacity - 1;
 	}
 
 	void Update() {
 		//Player has not triggered the text routine
-		if (!beginTextRoutine) {
+		if (!beginTextRoutine/*&&allowTextRoutine*/) {
 			//Player has input commands to show the textbox
 			if (playerInput.input.y == 1 && Input.GetKeyDown (menuMain.keys["ACTION"])) {
 				beginTextRoutine = true;
@@ -59,7 +66,7 @@ public class textbox : MonoBehaviour {
 				//Cannot print text while printing text
 				beginTextPrint = false;
 				//Read new line
-				textboxContent = textboxStuff [index];
+				textboxContent = librarian.requestedText [index];
 
 				//Start coroutine
 				StartCoroutine(textCrawler());

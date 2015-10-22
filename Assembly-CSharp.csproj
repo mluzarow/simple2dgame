@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\bossTest.cs" />
      <Compile Include="Assets\Scripts\doorController.cs" />
+     <Compile Include="Assets\Scripts\enemyController.cs" />
      <Compile Include="Assets\Scripts\menuMain.cs" />
      <Compile Include="Assets\Scripts\menuRebind.cs" />
      <Compile Include="Assets\Scripts\platformController.cs" />
@@ -61,8 +62,8 @@
      <Compile Include="Assets\Scripts\spawner.cs" />
      <Compile Include="Assets\Scripts\spawnerClone.cs" />
      <Compile Include="Assets\Scripts\textLibrarian.cs" />
+     <Compile Include="Assets\Scripts\textPrinter.cs" />
      <Compile Include="Assets\Scripts\textUser.cs" />
-     <Compile Include="Assets\Scripts\textbox.cs" />
      <Compile Include="Assets\Scripts\waypointController.cs" />
      <None Include="Assets\Files\Dialogue.txt" />
  <Reference Include="UnityEngine.UI">

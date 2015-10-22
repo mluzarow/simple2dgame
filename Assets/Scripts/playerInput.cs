@@ -14,7 +14,7 @@ public class playerInput : MonoBehaviour {
 
 	//Jumping
 	float gravity = -50f; //Gravity force
-	float jumpVelocity = 12f;
+	//float jumpVelocity = 12f;
 
 	//Jump physics variables
 	public float maxJumpHeight = 4f;

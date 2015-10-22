@@ -5,7 +5,10 @@ public class playerController : raycastController {
 	public collisionInfo collisions;
 	DeathInfo deathInfo;
 
+	/// <summary>
+	/// The collision mask for colliding with the ground layer.</summary>
 	public LayerMask collisionMask;
+	///<summary>The kill mask for colliding with the danger layer.</summary>
 	public LayerMask killMask;
 	public LayerMask waypoint1Mask;
 	public LayerMask waypoint2Mask;
@@ -134,12 +137,7 @@ public class playerController : raycastController {
 	}
 
 	struct DeathInfo {
-		bool killed;
 		public Vector2 recentWaypoint;
-
-		void reset() {
-			killed = false;
-		}
 	}
 
 	//struct for telling which direction you are colliding in
