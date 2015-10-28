@@ -111,6 +111,32 @@ public class textPrinter : MonoBehaviour {
 		//Allow textbox to be drawn on OnGUI()
 		triggerTextbox = true;
 
+		/*
+		//Index of the array of words in string textboxContent
+		int index = 0;
+		int partsLength;
+		string[] parts = textboxContent.Split (' ');
+		partsLength = parts.Length;
+		//Remove all text from the textbox
+		textboxContent = "";
+
+		//Allow textbox to be drawn on OnGUI()
+		triggerTextbox = true;
+
+		//Interate through the array of words
+		for (int iArray = 0; iArray < partsLength; iArray++) {
+			int wordLength = parts[iArray].Length;
+
+		
+			for (int iWord = 0; iWord < wordLength; iWord++) {
+
+			}
+		}
+		*/
+
+
+
+
 		//Interate through the string (originalText)
 		for (int i = 0; i < stringLength; i++) {
 			//Copy the next letter from the original text to output textbox text

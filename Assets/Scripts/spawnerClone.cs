@@ -2,21 +2,18 @@
 using System.Collections;
 
 public class spawnerClone : MonoBehaviour {
-	Vector2 direction;
+	///<summary>The speed of the game object.</summary>
+	public Vector2 velocity;
+	///<summary>The angle of the game object.</summary>
+	public float angle;
+	///<summary>The distance the game object can travel before it is destroyed.</summary>
+	public Vector2 limits;
 
-
-
-	// Use this for initialization
-	void Start () {
-
-		direction = new Vector2 (2f, -2f);
-	}
-	
 	// Update is called once per frame
 	void Update () {
-		transform.Translate (direction * Time.deltaTime);
+		transform.Translate (velocity * Time.deltaTime);
 
-		if (Mathf.Abs(transform.position.x) > 200f || Mathf.Abs (transform.position.y) > 400f) {
+		if (Mathf.Abs(transform.position.x) > limits.x || Mathf.Abs (transform.position.y) > limits.y) {
 			Destroy(gameObject);
 		}
 	}

@@ -2,6 +2,7 @@
 using System.Collections;
 
 [RequireComponent (typeof(playerController))]
+[RequireComponent (typeof(playerActions))]
 
 public class playerInput : MonoBehaviour {
 	//Movement
@@ -11,6 +12,8 @@ public class playerInput : MonoBehaviour {
 	//Flag for switching between player inputs impacting standard platforming movement and textbox interaction
 	public static bool triggerTextboxMovement;
 	public static Vector2 input;
+
+	bool drawgizmos = false;
 
 	//Jumping
 	float gravity = -50f; //Gravity force
@@ -33,8 +36,12 @@ public class playerInput : MonoBehaviour {
 	public Vector2 wallJumpTowards;
 	public Vector2 wallJumpAway;
 	public Vector2 wallJumpNeutral;
-	
+
+	playerActions actions;
 	playerController controller;
+
+	public bool dashing = false;
+	public bool dashTiming = false;
 	
 
 	void Start() {
@@ -42,6 +49,8 @@ public class playerInput : MonoBehaviour {
 		triggerTextboxMovement = false;
 
 		controller = GetComponent<playerController> ();
+		actions = GetComponent<playerActions> ();
+
 		wallJumpTowards = new Vector2 (12f, 20f);
 		wallJumpAway = new Vector2(18f, 17f);
 		wallJumpNeutral = new Vector2(8.5f, 7f);
@@ -52,9 +61,7 @@ public class playerInput : MonoBehaviour {
 		//minJumpVelocity = Mathf.Sqrt (2 * Mathf.Abs (gravity) * minJumpHeight);
 		//maxJumpvelocity = 16f;
 		minJumpVelocity = 0.1f;
-	}
-
-	
+	}	
 
 	void Update() {
 		//Get raw direction - Keyboard returns 1, 0, or -1 each axis
@@ -98,6 +105,9 @@ public class playerInput : MonoBehaviour {
 					} else if (input.y == -1) {
 						velocity.x = -wallDirection * wallJumpNeutral.x;
 						velocity.y = wallJumpNeutral.y;
+					} else {
+						velocity.x = -wallDirection * wallJumpAway.x;
+						velocity.y = wallJumpAway.y;
 					}
 				}
 				//Jumping off of the ground
@@ -106,13 +116,32 @@ public class playerInput : MonoBehaviour {
 				}
 			}
 
+			if (Input.GetMouseButton (0)) {
+				drawgizmos = true;
+			} else {
+				drawgizmos = false;
+			}
+
+			//Jumping; waiting on key up to lock upward jump velocity
 			if (Input.GetKeyUp (menuMain.keys["JUMP"])) {
 				if (velocity.y > minJumpVelocity) {
 					velocity.y = minJumpVelocity;
 				}
 			}
-		
+
+			//Not wall sliding
 			if (!wallSliding) {
+				if (Input.GetKeyDown (menuMain.keys["ACTION"])) {
+					//actions.heal();
+
+					if (velocity.x != 0f && !dashing) {
+						print ("dashed");
+						velocity.x *= 10;
+						dashing = true;
+						StartCoroutine(dashingTimer ());
+					}
+				}
+
 				//direction into velocity
 				float targetVelocityX = input.x * moveSpeed;
 				velocity.x = Mathf.SmoothDamp (velocity.x, targetVelocityX, ref velocityXSmoothing, 
@@ -122,7 +151,49 @@ public class playerInput : MonoBehaviour {
 			velocity = new Vector2(0f, 0f);
 		}
 
+
+
 		velocity.y += gravity * Time.deltaTime;
 		controller.Move (velocity * Time.deltaTime, false);
+	}
+
+	IEnumerator dashingTimer() {
+		print ("Timing dash");
+		//dashTiming = true;
+		yield return new WaitForSeconds (1f);
+		dashing = false;
+		//dashTiming = false;
+		print ("finished timing");
+
+		yield return 0;
+	}
+
+	void OnDrawGizmos() {
+		if (drawgizmos) {
+			Vector2 mouse = (Vector2) Camera.main.ScreenToWorldPoint(Input.mousePosition);
+			Vector2 player = (Vector2) transform.position;
+			float radius = 10f;
+			float diffy = Mathf.Abs (mouse.y) - Mathf.Abs (player.y);
+			float diffx = Mathf.Abs (mouse.x) - Mathf.Abs (player.x);
+			float angle = Mathf.Tan (diffy / diffx);
+			float x = Mathf.Sin (angle) * radius;
+			float y = Mathf.Cos (angle) * radius;
+
+
+			if ((Mathf.Abs((mouse - player).x) <= 10f) && (Mathf.Abs ((mouse - player).y) <= 10f)) {
+				Gizmos.DrawLine (player, mouse);
+			} else {
+				if (Mathf.Abs((mouse - player).x) > 10f) {
+					mouse.x = (player.x + x);
+				}
+				if (Mathf.Abs((mouse - player).y) > 10f) {
+					mouse.y = (player.y + y);
+				}
+				Gizmos.DrawLine (player, mouse);
+			}
+
+			//Gizmos.DrawLine (Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(1f, 0f, 0f), Camera.main.ScreenToWorldPoint(Input.mousePosition - new Vector3(-1f,0f,0f)));
+			//Gizmos.DrawLine (Camera.main.ScreenToWorldPoint(Input.mousePosition) + new Vector3(0f, 1f, 0f), Camera.main.ScreenToWorldPoint(Input.mousePosition - new Vector3(0f,-1f,0f)));
+		}
 	}
 }

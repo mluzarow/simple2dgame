@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 
 ///<summary>Uess a text tag to read all dialogue under said tag from dialogue.txt and saves it in requestedText.</summary>
-public class textLibrarian : MonoBehaviour {
+public class textLibrarian {
 	/// <summary>Stores raw read info.</summary>
 	private Stack<string> reader = new Stack<string>();
 	/// <summary>Stores organized read info.</summary>
@@ -105,7 +105,7 @@ public class textLibrarian : MonoBehaviour {
 				return(0);
 			}
 		} catch (IOException e) {
-			print(e);
+			//print(e);
 			//Return error
 			return (1);
 		}

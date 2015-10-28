@@ -14,15 +14,6 @@ public class spawner : MonoBehaviour {
 		//StartCoroutine (wait (5f));
 	}
 
-	/*IEnumerator wait(float seconds) {
-		yield return new WaitForSeconds (seconds);
-		if (fire) {
-			spawnBullet ();
-		} else {
-
-		}
-	}*/
-
 	void Update() {
 		distanceApart.x = Mathf.Abs (player.transform.position.x) - Mathf.Abs (this.transform.position.x);
 		distanceApart.y = Mathf.Abs (player.transform.position.y) - Mathf.Abs (this.transform.position.y);

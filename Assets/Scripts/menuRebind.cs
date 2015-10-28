@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using GamePadInput;
 
 //For reading/writing file
 using System.IO;
@@ -42,6 +43,8 @@ public class menuRebind : MonoBehaviour {
 			GUI.Label (rebindingLabelSize, "PRESS A BUTTON TO USE FOR INPUT: " + keyToChange);
 
 			Event e = Event.current;
+
+
 
 			if (e.isKey) {
 				menuMain.keys[keyToChange] = e.keyCode;
