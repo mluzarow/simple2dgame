@@ -32,8 +32,11 @@ namespace GamePadInput {
 		private enum Trigger {LeftTrigger, RightTrigger}
 		#endregion Enums
 
+		#region Public Variables
 		public static GamePadKeyCodes gamepadKeyCodes = new GamePadKeyCodes(0);
+		#endregion Public Variables
 
+		#region Structs
 		///<summary>
 		/// Struct holding all gamepad input keycodes.
 		///</summary>
@@ -51,6 +54,8 @@ namespace GamePadInput {
 			public AxisCode Axis_Dpad;
 			public AxisCode Axis_StickLeft;
 			public AxisCode Axis_StickRight;
+			public string Trigger_Left;
+			public string Trigger_Right;
 
 			public GamePadKeyCodes(int i) {
 				Btn_A = GetKeyCode (Button.A);
@@ -66,8 +71,47 @@ namespace GamePadInput {
 				Axis_Dpad 		= GetAxisCode (Axis.Dpad);
 				Axis_StickLeft 	= GetAxisCode (Axis.LeftStick);
 				Axis_StickRight = GetAxisCode (Axis.RightStick);
+				Trigger_Left  = GetTriggerCode (Trigger.LeftTrigger);
+				Trigger_Right = GetTriggerCode (Trigger.RightTrigger);
 			}
 		}
+
+		public struct GamePadState {
+			public bool Btn_A;
+			public bool Btn_B;
+			public bool Btn_X;
+			public bool Btn_Y;
+			public bool Btn_ShoulderLeft;
+			public bool Btn_ShoulderRight;
+			public bool Btn_Select;
+			public bool Btn_Start;
+			public bool Btn_StickLeftClick;
+			public bool Btn_StickRightClick;
+			public Vector2 Axis_Dpad;
+			public Vector2 Axis_StickLeft;
+			public Vector2 Axis_StickRight;
+			public float Trigger_Left;
+			public float Trigger_Right;
+
+			public GamePadState (int i) {
+				Btn_A = false;
+				Btn_B = false;
+				Btn_X = false;
+				Btn_Y = false;
+				Btn_ShoulderLeft = false;
+				Btn_ShoulderRight = false;
+				Btn_Select = false;
+				Btn_Start = false;
+				Btn_StickLeftClick = false;
+				Btn_StickRightClick = false;
+				Axis_Dpad = Vector2.zero;
+				Axis_StickLeft = Vector2.zero;
+				Axis_StickRight = Vector2.zero;
+				Trigger_Left = 0f;
+				Trigger_Right = 0f;
+			}
+		}
+		#endregion Structs
 
 		#region Key Finds
 		/// <summary>
@@ -103,14 +147,14 @@ namespace GamePadInput {
 			AxisCode axisData;
 
 			if (axis == Axis.Dpad) {
-				axisData.x = "DPad_XAxis_0";
-				axisData.y = "DPad_YAxis_0";
+				axisData.x = "DPad_XAxis_1";
+				axisData.y = "DPad_YAxis_1";
 			} else if (axis == Axis.LeftStick) {
-				axisData.x = "L_XAxis_0";
-				axisData.y = "L_YAxis_0";
+				axisData.x = "L_XAxis_1";
+				axisData.y = "L_YAxis_1";
 			} else if (axis == Axis.RightStick) {
-				axisData.x = "R_XAxis_0";
-				axisData.y = "R_YAxis_0";
+				axisData.x = "R_XAxis_1";
+				axisData.y = "R_YAxis_1";
 			} else {
 				axisData.x = "";
 				axisData.y = "";
@@ -118,6 +162,64 @@ namespace GamePadInput {
 
 			return (axisData);
 		}
+
+		private static string GetTriggerCode (Trigger trigger) {
+			string code = "";
+
+			if (trigger == Trigger.LeftTrigger) {
+				code = "TriggerL_1";
+			} else if (trigger == Trigger.RightTrigger) {
+				code = "TriggerR_1";
+			}
+
+			return (code);
+		}
 		#endregion Key Finds
+
+		public static GamePadState GetState () {
+			GamePadState state = new GamePadState ();
+
+			state.Btn_A = Input.GetKey (gamepadKeyCodes.Btn_A);
+			state.Btn_B = Input.GetKey (gamepadKeyCodes.Btn_B);
+			state.Btn_X = Input.GetKey (gamepadKeyCodes.Btn_X);
+			state.Btn_Y = Input.GetKey (gamepadKeyCodes.Btn_Y);
+			state.Btn_ShoulderLeft = Input.GetKey (gamepadKeyCodes.Btn_ShoulderLeft);
+			state.Btn_ShoulderRight = Input.GetKey (gamepadKeyCodes.Btn_ShoulderRight);
+			state.Btn_Start = Input.GetKey (gamepadKeyCodes.Btn_Start);
+			state.Btn_Select = Input.GetKey (gamepadKeyCodes.Btn_Select);
+			state.Axis_StickLeft.x = Input.GetAxis (gamepadKeyCodes.Axis_StickLeft.x);
+			state.Axis_StickLeft.y = Input.GetAxis (gamepadKeyCodes.Axis_StickLeft.y);
+			state.Axis_StickRight.x = Input.GetAxis (gamepadKeyCodes.Axis_StickRight.x);
+			state.Axis_StickRight.y = Input.GetAxis (gamepadKeyCodes.Axis_StickRight.y);
+			state.Axis_Dpad.x = Input.GetAxis (gamepadKeyCodes.Axis_Dpad.x);
+			state.Axis_Dpad.y = Input.GetAxis (gamepadKeyCodes.Axis_Dpad.y);
+			state.Trigger_Left = Input.GetAxis (gamepadKeyCodes.Trigger_Left);
+			state.Trigger_Right = Input.GetAxis (gamepadKeyCodes.Trigger_Right);
+
+			return (state);
+		}
+		/*
+		public static Vector2 GetAxis (AxisCode axis) {
+			Vector2 axisVals = new Vector2();
+
+			axisVals.x = Input.GetAxis (axis.x);
+			axisVals.y = -Input.GetAxis (axis.y);
+
+			return (axisVals);
+		}
+
+		public static Vector2 GetAxis (AxisCode axis, bool raw) {
+			Vector2 axisVals = new Vector2();
+
+			if (raw) {
+				axisVals.x = Input.GetAxisRaw (axis.x);
+				axisVals.y = -Input.GetAxisRaw (axis.y);
+			} else if (!raw) {
+				axisVals.x = Input.GetAxis (axis.x);
+				axisVals.y = -Input.GetAxis (axis.y);
+			}
+
+			return (axisVals);
+		}*/
 	}
 }

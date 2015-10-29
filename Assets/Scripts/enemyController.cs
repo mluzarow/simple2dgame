@@ -22,15 +22,11 @@ public class enemyController : raycastController {
 		//If moving on x-axis, update position facing
 		if (velocity.x != 0) {
 			collisions.directionFacing = (int)Mathf.Sign(velocity.x);
+
+			//velocity in the x plane is NOT 0; check for collisions
+			horizontalCollisions (ref velocity);
 		}
 
-		if (velocity.x != 0) {
-			collisions.directionFacing = (int)Mathf.Sign(velocity.x);
-		}
-		
-		//velocity in the x plane is NOT 0; check for collisions
-		horizontalCollisions (ref velocity);
-		
 		//velocity in the y plane is NOT 0; check for collisions
 		if (velocity.y != 0) {
 			verticalCollisions (ref velocity);
